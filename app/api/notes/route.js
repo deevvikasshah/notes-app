@@ -4,6 +4,17 @@ let notes = [
 ];
 let nextId = 2;
 
+// Helper: format date in UTC for consistent hydration
+function formatDateUTC(ts) {
+  return new Date(ts).toLocaleDateString("en-US", { 
+    month: "short", 
+    day: "numeric", 
+    hour: "2-digit", 
+    minute: "2-digit",
+    timeZone: "UTC"
+  });
+}
+
 // Helper: validate note input
 function validateNote(data) {
   const errors = {};
@@ -14,9 +25,14 @@ function validateNote(data) {
   return errors;
 }
 
+// Helper: add formattedDate to note
+function withFormattedDate(note) {
+  return { ...note, formattedDate: formatDateUTC(note.createdAt) };
+}
+
 // GET /api/notes - Return all notes
 export async function GET() {
-  return Response.json(notes.sort((a, b) => b.createdAt - a.createdAt));
+  return Response.json(notes.sort((a, b) => b.createdAt - a.createdAt).map(withFormattedDate));
 }
 
 // POST /api/notes - Create new note
@@ -33,7 +49,7 @@ export async function POST(request) {
     createdAt: Date.now()
   };
   notes.push(note);
-  return Response.json(note, { status: 201 });
+  return Response.json(withFormattedDate(note), { status: 201 });
 }
 
 // PUT /api/notes - Update note (expects { id, title, content })
@@ -51,7 +67,7 @@ export async function PUT(request) {
   if (index === -1) return Response.json({ error: 'Not found' }, { status: 404 });
   
   notes[index] = { ...notes[index], title: title.trim(), content: content.trim() };
-  return Response.json(notes[index]);
+  return Response.json(withFormattedDate(notes[index]));
 }
 
 // DELETE /api/notes - Delete note (expects { id })
