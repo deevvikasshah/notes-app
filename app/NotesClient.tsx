@@ -8,6 +8,7 @@ type Note = {
   title: string;
   content: string;
   createdAt: number;
+  formattedDate?: string;
 };
 
 type FormData = {
@@ -89,8 +90,8 @@ export default function NotesClient({ initialNotes }: { initialNotes: Note[] }) 
     setErrors({});
   };
 
-  const formatDate = (ts: number) =>
-    new Date(ts).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  const formatDate = (ts: number, formattedDate?: string) =>
+    formattedDate ?? new Date(ts).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
@@ -173,7 +174,7 @@ export default function NotesClient({ initialNotes }: { initialNotes: Note[] }) 
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{note.title}</h3>
                     <p className="text-gray-600 dark:text-gray-300 mt-1 whitespace-pre-wrap">{note.content}</p>
-                    <p className="text-xs text-gray-400 mt-2">{formatDate(note.createdAt)}</p>
+                    <p className="text-xs text-gray-400 mt-2">{formatDate(note.createdAt, note.formattedDate)}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button

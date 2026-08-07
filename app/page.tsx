@@ -9,7 +9,21 @@ async function getNotes() {
   return res.json();
 }
 
+function formatDate(ts: number) {
+  return new Date(ts).toLocaleDateString("en-US", { 
+    month: "short", 
+    day: "numeric", 
+    hour: "2-digit", 
+    minute: "2-digit",
+    timeZone: "UTC"
+  });
+}
+
 export default async function Home() {
   const notes = await getNotes();
-  return <NotesClient initialNotes={notes} />;
+  const notesWithFormattedDate = notes.map((note: { createdAt: number }) => ({
+    ...note,
+    formattedDate: formatDate(note.createdAt),
+  }));
+  return <NotesClient initialNotes={notesWithFormattedDate} />;
 }
