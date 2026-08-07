@@ -59,9 +59,10 @@ export default function NotesClient({ initialNotes }: { initialNotes: Note[] }) 
       setFormData({ title: "", content: "" });
       setShowForm(false);
       setErrors({});
-    } catch (err) {
-      if (err.errors) setErrors(err.errors);
-    }
+    } catch (err: unknown) {
+  const error = err as { errors?: Partial<FormData> };
+  if (error.errors) setErrors(error.errors);
+}
   };
 
   const handleDelete = async (id: number) => {
@@ -69,9 +70,10 @@ export default function NotesClient({ initialNotes }: { initialNotes: Note[] }) 
     try {
       await api("DELETE", { id });
       setNotes(notes.filter((n) => n.id !== id));
-    } catch (err) {
-      alert(err.error || "Failed to delete");
-    }
+    } catch (err: unknown) {
+  const error = err as { error?: string };
+  alert(error.error || "Failed to delete");
+}
   };
 
   const startEdit = (note: Note) => {
